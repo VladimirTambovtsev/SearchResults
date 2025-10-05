@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 // Constants
@@ -24,7 +24,7 @@ interface SearchResponse {
 
 type SearchError = string | null;
 
-export default function SearchPage() {
+function SearchPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -295,5 +295,56 @@ export default function SearchPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function SearchPageLoading() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Search App
+          </h1>
+          <p className="text-gray-600">
+            Find articles, tutorials, and resources
+          </p>
+        </div>
+
+        {/* Loading Search Input */}
+        <div className="relative mb-8">
+          <div className="relative">
+            <div className="w-full px-4 py-3 pl-12 pr-12 text-lg border border-gray-300 rounded-lg bg-gray-100">
+              <div className="h-6 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+            
+            {/* Search Icon */}
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Loading Empty State */}
+        <div className="text-center py-12">
+          <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4 animate-pulse"></div>
+          <div className="h-6 bg-gray-200 rounded w-32 mx-auto mb-2 animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded w-48 mx-auto animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main component with Suspense boundary
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchPageLoading />}>
+      <SearchPageContent />
+    </Suspense>
   );
 }
